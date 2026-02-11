@@ -3,11 +3,27 @@ import React from 'react'
 import { styles } from '@/styles/auth.styles'
 import { Ionicons } from '@expo/vector-icons'
 import { COLORS } from '@/constants/theme'
+import { useSSO } from '@clerk/clerk-expo'
+import { useRouter } from 'expo-router'
 
-export default function login() {
-    function handleGoogleSignIn(event: GestureResponderEvent): void {
-        throw new Error('Function not implemented.')
+export default function Login() {
+  const { startSSOFlow } = useSSO();
+  const router = useRouter();
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const { createdSessionId, setActive } = await startSSOFlow({ strategy: "oauth_google" });
+
+      if (setActive && createdSessionId) {
+        setActive({ session: createdSessionId });
+        router.replace("/(tabs)");
+      }
+    } catch (error) {
+      console.error("OAuth error:", error);
     }
+
+   
+    };
 
   return (
     <View style={styles.container}>
